@@ -9,13 +9,13 @@ static unsigned int borderpx  = 1;        /* border pixel of windows */
 static unsigned int snap      = 32;       /* snap pixel */
 static const unsigned int systraypinning = 0;   /* 0: sloppy systray follows selected monitor, >0: pin systray to monitor X */
 static const unsigned int systrayonleft = 0;   	/* 0: systray in the right corner, >0: systray on left of status text */
-static const unsigned int systrayspacing = 4;   /* systray spacing */
+static const unsigned int systrayspacing = 1;   /* systray spacing */
 static const int systraypinningfailfirst = 1;   /* 1: if pinning fails, display systray on the first monitor, False: display systray on the last monitor*/
 static const int showsystray        = 1;     /* 0 means no systray */
 static int showbar            = 1;        /* 0 means no bar */
 static int topbar             = 1;        /* 0 means bottom bar */
 static const double activeopacity   = 1.0f;     /* Window opacity when it's focused (0 <= opacity <= 1) */
-static const double inactiveopacity = 0.85f;   /* Window opacity when it's inactive (0 <= opacity <= 1) */
+static const double inactiveopacity = 0.9f;   /* Window opacity when it's inactive (0 <= opacity <= 1) */
 static const char *fonts[]          = { "monospace:size=10" };
 static const char dmenufont[]       = "monospace:size=10";
 static char normbgcolor[]           = "#222222";
@@ -126,7 +126,6 @@ static Key keys[] = {
 	{ MODKEY,                      		 XK_l,     		                          setmfact,       {.f = +0.05} },
 	{ MODKEY|ShiftMask,    	       		 XK_Return,                             	  togglescratch,  {.v = scratchpadcmd } },
 	{ MODKEY,                      		 XK_Tab,   		                          view,           {0} },
-	{ MODKEY|ShiftMask,            		 XK_c,     		                          killclient,     {0} },
 	{ MODKEY,                      		 XK_t,     		                          setlayout,      {.v = &layouts[0]} },
 	{ MODKEY|ShiftMask,            		 XK_f,     		                          setlayout,      {.v = &layouts[1]} },
 	{ MODKEY,                      		 XK_m,     		                          setlayout,      {.v = &layouts[2]} },
@@ -161,6 +160,7 @@ static Key keys[] = {
 	{ MODKEY,			         XK_w,		                             	  spawn,	  SHCMD("$BROWSER") },
 	{ MODKEY|ShiftMask,		         XK_w,		                              	  spawn,	  SHCMD(TERMINAL " -e sudo nmtui") },
 	{ MODKEY,			         XK_r,		                              	  spawn,	  SHCMD(TERMINAL " -e ranger") },
+	{ MODKEY,			         XK_c,		                              	  spawn,	  SHCMD(TERMINAL " -e ferdi") },
 };
 
 /* button definitions */
