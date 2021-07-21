@@ -157,10 +157,11 @@ static Key keys[] = {
 	{ 0,                               	 XF86XK_AudioMute,		                  spawn,	  SHCMD("pamixer -t") }, /* mute */
 	{ 0,                               	 XF86XK_AudioRaiseVolume,              		  spawn,	  SHCMD("pamixer --allow-boost -i 3") }, /* vol up */
 	{ 0,                               	 XF86XK_AudioLowerVolume,              		  spawn,	  SHCMD("pamixer --allow-boost -d 3") }, /* vol down */
-	{ MODKEY,			         XK_w,		                             	  spawn,	  SHCMD("$BROWSER") },
-	{ MODKEY|ShiftMask,		         XK_w,		                              	  spawn,	  SHCMD(TERMINAL " -e sudo nmtui") },
-	{ MODKEY,			         XK_r,		                              	  spawn,	  SHCMD(TERMINAL " -e ranger") },
-	{ MODKEY,			         XK_c,		                              	  spawn,	  SHCMD(TERMINAL " -e ferdi") },
+	{ MODKEY,			         XK_w,		                             	  spawn,	  SHCMD("$BROWSER") }, /* browser */
+	{ MODKEY|ShiftMask,		         XK_w,		                              	  spawn,	  SHCMD(TERMINAL " -e sudo nmtui") }, /* networkmanager */
+	{ MODKEY,			         XK_r,		                              	  spawn,	  SHCMD(TERMINAL " -e ranger") }, /* ranger */
+	{ MODKEY,			         XK_c,		                              	  spawn,	  SHCMD(TERMINAL " -e ferdi") }, /* ferdi */
+	{ MODKEY|ShiftMask,		         XK_c,		                              	  spawn,	  SHCMD(TERMINAL "xstata") }, /* stata */
 };
 
 /* button definitions */

@@ -22,7 +22,7 @@ All patches applied to this build are stored in /patch
  - hide\_vacant\_tags: hide tags with no windows for a cleaner bar
  - stacker: utilities to  manage the client stack. `super` for push operations and `super+shift` for focus operations
  - scratchpad: spawn a floating terminal over any window with `super + shift + enter`
-
+ - autostart: loads up commands in ~/.dwm/autostart.sh
 
 ## Requirements
 In order to build dwm you need the Xlib header files. There should be available in your distribution's xorg package.
