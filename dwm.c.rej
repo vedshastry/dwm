@@ -1,14 +1,23 @@
 --- dwm.c
 +++ dwm.c
-@@ -237,7 +239,11 @@ static int xerrorstart(Display *dpy, XErrorEvent *ee);
- static void zoom(const Arg *arg);
+@@ -835,7 +835,7 @@ focusstack(const Arg *arg)
+ {
+ 	Client *c = NULL, *i;
  
- /* variables */
-+static const char autostartblocksh[] = "autostart_blocking.sh";
-+static const char autostartsh[] = "autostart.sh";
- static const char broken[] = "broken";
-+static const char dwmdir[] = "dwm";
-+static const char localshare[] = ".local/share";
- static char stext[256];
- static int screen;
- static int sw, sh;           /* X display screen geometry width, height */
+-	if (!selmon->sel || selmon->sel->isfullscreen)
++	if (!selmon->sel)
+ 		return;
+ 	if (arg->i > 0) {
+ 		for (c = selmon->sel->next; c && !ISVISIBLE(c); c = c->next);
+--- dwm.c
++++ dwm.c
+@@ -564,9 +563,6 @@ configurenotify(XEvent *e)
+ 			drw_resize(drw, sw, bh);
+ 			updatebars();
+ 			for (m = mons; m; m = m->next) {
+-				for (c = m->clients; c; c = c->next)
+-					if (c->isfullscreen)
+-						resizeclient(c, m->mx, m->my, m->mw, m->mh);
+ 				XMoveResizeWindow(dpy, m->barwin, m->wx, m->by, m->ww, bh);
+ 			}
+ 			focus(NULL);
