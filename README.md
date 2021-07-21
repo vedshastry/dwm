@@ -10,22 +10,23 @@ Custom bindings are commented in the config headers [config.def.h](config.def.h)
 
 All patches applied to this build are stored in /patch
 
- - pertag: allow setting different layouts for unique tags
- - restartsig: kill & restart dwm without logging out - useful post compilation. `super + ctrl + shift + q`
- - sticky: set a window as sticky to all tags `super + s`
- - xresources: compatibility with settings in .xresources
- - nametag: allow custom text to be appended to tag numbers `super + n`
- - fullscreen: force a window to go fullscreen and hide the statusbar `super + f`
- - systray: a system tray implementation in dwm
+ - autostart: loads up commands in ~/.dwm/autostart.sh
  - bottomstack: a horizontal stack layout `super + shift + t`
  - fadeinactive: fades inactive window by reducing opacity
+ - fakefullscreen: clients can only fullscreen into the space given to them. To be used with fullscreen below
+ - fullscreen: force a window to go fullscreen and hide the statusbar `super + f`
  - hide\_vacant\_tags: hide tags with no windows for a cleaner bar
- - stacker: utilities to  manage the client stack. `super` for push operations and `super+shift` for focus operations
+ - nametag: allow custom text to be appended to tag numbers `super + n`
+ - pertag: allow setting different layouts for unique tags
+ - restartsig: kill & restart dwm without logging out - useful post compilation. `super + ctrl + shift + q`
  - scratchpad: spawn a floating terminal over any window with `super + shift + enter`
- - autostart: loads up commands in ~/.dwm/autostart.sh
+ - stacker: utilities to  manage the client stack. `super` for push operations and `super+shift` for focus operations
+ - sticky: set a window as sticky to all tags `super + s`
+ - systray: a system tray implementation in dwm
+ - xresources: compatibility with settings in .xresources
 
 ## Requirements
-In order to build dwm you need the Xlib header files. There should be available in your distribution's xorg package.
+In order to build dwm you need the Xlib header files. These should be available in your distribution's Xorg package.
 
 ## Installation
 
