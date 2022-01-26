@@ -1,0 +1,149 @@
+From e493493fa3bffd8b58408a55714de9d49211b1ba Mon Sep 17 00:00:00 2001
+From: Layerex <layerex@dismail.de>
+Date: Fri, 23 Jul 2021 15:15:23 +0300
+Subject: [PATCH] ratiofullscreen patch
+
+Toggle fullscreen for a window while saving its ratio.
+Space left uncovered by a window may be set to be black or left
+transparent.
+The patch is intended to be used with old games which have miniscule
+window sizes and don't handle fullscreen correctly themselves.
+Smartborders patch (its modified resizeclient function) is a dependency
+of this patch.
+---
+ config.def.h |  3 +++
+ dwm.c        | 60 ++++++++++++++++++++++++++++++++++++++++++++++++----
+ 2 files changed, 59 insertions(+), 4 deletions(-)
+
+diff --git a/config.def.h b/config.def.h
+index 1c0b587..6966237 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -36,6 +36,8 @@ static const float mfact     = 0.55; /* factor of master area size [0.05..0.95]
+ static const int nmaster     = 1;    /* number of clients in master area */
+ static const int resizehints = 1;    /* 1 means respect size hints in tiled resizals */
+ 
++static const int ratiofullscreenborders = 1;
++
+ static const Layout layouts[] = {
+ 	/* symbol     arrange function */
+ 	{ "[]=",      tile },    /* first entry is default */
+@@ -61,6 +63,7 @@ static const char *termcmd[]  = { "st", NULL };
+ 
+ static Key keys[] = {
+ 	/* modifier                     key        function        argument */
++	{ MODKEY|ControlMask,           XK_f,      toggleratiofullscr,  {0} },
+ 	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
+ 	{ MODKEY|ShiftMask,             XK_Return, spawn,          {.v = termcmd } },
+ 	{ MODKEY,                       XK_b,      togglebar,      {0} },
+diff --git a/dwm.c b/dwm.c
+index 3c94e4b..7b19235 100644
+--- a/dwm.c
++++ b/dwm.c
+@@ -211,6 +211,7 @@ static void tagmon(const Arg *arg);
+ static void tile(Monitor *);
+ static void togglebar(const Arg *arg);
+ static void togglefloating(const Arg *arg);
++static void toggleratiofullscr(const Arg *arg);
+ static void toggletag(const Arg *arg);
+ static void toggleview(const Arg *arg);
+ static void unfocus(Client *c, int setfocus);
+@@ -802,7 +803,9 @@ focus(Client *c)
+ 		detachstack(c);
+ 		attachstack(c);
+ 		grabbuttons(c, 1);
+-		XSetWindowBorder(dpy, c->win, scheme[SchemeSel][ColBorder].pixel);
++		if (!c->isfullscreen) {
++			XSetWindowBorder(dpy, c->win, scheme[SchemeSel][ColBorder].pixel);
++		}
+ 		setfocus(c);
+ 	} else {
+ 		XSetInputFocus(dpy, root, RevertToPointerRoot, CurrentTime);
+@@ -1482,10 +1485,49 @@ setfullscreen(Client *c, int fullscreen)
+ 	if (fullscreen && !c->isfullscreen) {
+ 		XChangeProperty(dpy, c->win, netatom[NetWMState], XA_ATOM, 32,
+ 			PropModeReplace, (unsigned char*)&netatom[NetWMFullscreen], 1);
+-		c->isfullscreen = 1;
++		c->isfullscreen = fullscreen;
+ 		c->oldstate = c->isfloating;
++		c->oldbw = c->bw;
++		c->bw = 0;
+ 		c->isfloating = 1;
+-		resizeclient(c, c->mon->mx, c->mon->my, c->mon->mw, c->mon->mh, 0);
++		int nx, ny, nw, nh, bw;
++		if (fullscreen == 1) {
++			nx = c->mon->mx;
++			ny = c->mon->my;
++			nw = c->mon->mw;
++			nh = c->mon->mh;
++			bw = 0;
++		} else if (fullscreen == 2) {
++			if ((nw = c->w * c->mon->mh / c->h) < c->mon->mw) {
++				nh = c->mon->mh;
++				nx = (c->mon->mw - nw) / 2;
++				if (!ratiofullscreenborders) {
++					ny = c->mon->my;
++					bw = 0;
++				} else {
++					ny = -nx;
++					bw = nx;
++					nx = 0;
++				}
++			} else {
++				nw = c->mon->mw;
++				nh = c->h * c->mon->mw / c->w;
++				ny = (c->mon->mh - nh) / 2;
++				if (!ratiofullscreenborders) {
++					nx = c->mon->mx;
++					bw = 0;
++				} else {
++					nx = -ny;
++					bw = ny;
++					ny = 0;
++				}
++			}
++			XSetWindowBorder(dpy, c->win, BlackPixel(dpy, screen));
++		} else {
++			printf("Invalid argument (%d) provided to setfullscreen", fullscreen);
++			return;
++		}
++		resizeclient(c, nx, ny, nw, nh, bw);
+ 		XRaiseWindow(dpy, c->win);
+ 	} else if (!fullscreen && c->isfullscreen){
+ 		XChangeProperty(dpy, c->win, netatom[NetWMState], XA_ATOM, 32,
+@@ -1498,6 +1540,7 @@ setfullscreen(Client *c, int fullscreen)
+ 		c->h = c->oldh;
+ 		c->bw = c->oldbw;
+ 		resizeclient(c, c->x, c->y, c->w, c->h, c->bw);
++		XSetWindowBorder(dpy, c->win, scheme[SchemeSel][ColBorder].pixel);
+ 		arrange(c->mon);
+ 	}
+ }
+@@ -1730,6 +1773,13 @@ togglefloating(const Arg *arg)
+ 	arrange(selmon);
+ }
+ 
++void
++toggleratiofullscr(const Arg *arg)
++{
++  if(selmon->sel)
++    setfullscreen(selmon->sel, !selmon->sel->isfullscreen * 2);
++}
++
+ void
+ toggletag(const Arg *arg)
+ {
+@@ -1763,7 +1813,9 @@ unfocus(Client *c, int setfocus)
+ 	if (!c)
+ 		return;
+ 	grabbuttons(c, 0);
+-	XSetWindowBorder(dpy, c->win, scheme[SchemeNorm][ColBorder].pixel);
++	if (!c->isfullscreen) {
++		XSetWindowBorder(dpy, c->win, scheme[SchemeNorm][ColBorder].pixel);
++	}
+ 	if (setfocus) {
+ 		XSetInputFocus(dpy, root, RevertToPointerRoot, CurrentTime);
+ 		XDeleteProperty(dpy, root, netatom[NetActiveWindow]);
+-- 
+2.32.0
+
