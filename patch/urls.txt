@@ -30,6 +30,7 @@ https://dwm.suckless.org/patches/smartborders/dwm-smartborders-6.2.diff
 https://dwm.suckless.org/patches/stacker/dwm-stacker-6.2.diff
 https://dwm.suckless.org/patches/sticky/dwm-sticky-6.1.diff
 https://dwm.suckless.org/patches/stickyindicator/dwm-stickyindicator-6.2.diff
+https://dwm.suckless.org/patches/systray/dwm-systray-6.3.diff
 https://dwm.suckless.org/patches/tag-previews/dwm-tag-preview-6.2.diff
 https://dwm.suckless.org/patches/taglabels/dwm-taglabels+hide_vacant_tags-6.2.diff
 https://dwm.suckless.org/patches/winicon/dwm-winicon-6.2-v2.1.diff
