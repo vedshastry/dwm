@@ -1,0 +1,90 @@
+--- dwm.c
++++ dwm.c
+@@ -188,8 +188,8 @@ static void pop(Client *);
+ static void propertynotify(XEvent *e);
+ static void quit(const Arg *arg);
+ static Monitor *recttomon(int x, int y, int w, int h);
+-static void resize(Client *c, int x, int y, int w, int h, int interact);
+-static void resizeclient(Client *c, int x, int y, int w, int h);
++static void resize(Client *c, int x, int y, int w, int h, int bw, int interact);
++static void resizeclient(Client *c, int x, int y, int w, int h, int bw);
+ static void resizemouse(const Arg *arg);
+ static void restack(Monitor *m);
+ static void run(void);
+@@ -573,7 +580,7 @@ configurenotify(XEvent *e)
+ 			for (m = mons; m; m = m->next) {
+ 				for (c = m->clients; c; c = c->next)
+ 					if (c->isfullscreen)
+-						resizeclient(c, m->mx, m->my, m->mw, m->mh);
++						resizeclient(c, m->mx, m->my, m->mw, m->mh, 0);
+ 				XMoveResizeWindow(dpy, m->barwin, m->wx, m->by, m->ww, bh);
+ 			}
+ 			focus(NULL);
+@@ -1273,14 +1280,14 @@ recttomon(int x, int y, int w, int h)
+ }
+ 
+ void
+-resize(Client *c, int x, int y, int w, int h, int interact)
++resize(Client *c, int x, int y, int w, int h, int bw, int interact)
+ {
+-	if (applysizehints(c, &x, &y, &w, &h, interact))
+-		resizeclient(c, x, y, w, h);
++	if (applysizehints(c, &x, &y, &w, &h, &bw, interact))
++		resizeclient(c, x, y, w, h, bw);
+ }
+ 
+ void
+-resizeclient(Client *c, int x, int y, int w, int h)
++resizeclient(Client *c, int x, int y, int w, int h, int bw)
+ {
+ 	XWindowChanges wc;
+ 
+@@ -1484,22 +1491,20 @@ setfullscreen(Client *c, int fullscreen)
+ 			PropModeReplace, (unsigned char*)&netatom[NetWMFullscreen], 1);
+ 		c->isfullscreen = 1;
+ 		c->oldstate = c->isfloating;
+-		c->oldbw = c->bw;
+-		c->bw = 0;
+ 		c->isfloating = 1;
+-		resizeclient(c, c->mon->mx, c->mon->my, c->mon->mw, c->mon->mh);
++		resizeclient(c, c->mon->mx, c->mon->my, c->mon->mw, c->mon->mh, 0);
+ 		XRaiseWindow(dpy, c->win);
+ 	} else if (!fullscreen && c->isfullscreen){
+ 		XChangeProperty(dpy, c->win, netatom[NetWMState], XA_ATOM, 32,
+ 			PropModeReplace, (unsigned char*)0, 0);
+ 		c->isfullscreen = 0;
+ 		c->isfloating = c->oldstate;
+-		c->bw = c->oldbw;
+ 		c->x = c->oldx;
+ 		c->y = c->oldy;
+ 		c->w = c->oldw;
+ 		c->h = c->oldh;
+-		resizeclient(c, c->x, c->y, c->w, c->h);
++		c->bw = c->oldbw;
++		resizeclient(c, c->x, c->y, c->w, c->h, c->bw);
+ 		arrange(c->mon);
+ 	}
+ }
+@@ -1626,7 +1631,7 @@ showhide(Client *c)
+ 		/* show clients top down */
+ 		XMoveWindow(dpy, c->win, c->x, c->y);
+ 		if ((!c->mon->lt[c->mon->sellt]->arrange || c->isfloating) && !c->isfullscreen)
+-			resize(c, c->x, c->y, c->w, c->h, 0);
++			resize(c, c->x, c->y, c->w, c->h, c->bw, 0);
+ 		showhide(c->snext);
+ 	} else {
+ 		/* hide clients bottom up */
+@@ -1698,11 +1707,11 @@ tile(Monitor *m)
+ 	for (i = my = ty = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
+ 		if (i < m->nmaster) {
+ 			h = (m->wh - my) / (MIN(n, m->nmaster) - i);
+-			resize(c, m->wx, m->wy + my, mw - (2*c->bw), h - (2*c->bw), 0);
++			resize(c, m->wx, m->wy + my, mw - 2*bw, h - 2*bw, bw, 0);
+ 			my += HEIGHT(c);
+ 		} else {
+ 			h = (m->wh - ty) / (n - i);
+-			resize(c, m->wx + mw, m->wy + ty, m->ww - mw - (2*c->bw), h - (2*c->bw), 0);
++			resize(c, m->wx + mw, m->wy + ty, m->ww - mw - 2*bw, h - 2*bw, bw, 0);
+ 			ty += HEIGHT(c);
+ 		}
+ }
