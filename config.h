@@ -24,7 +24,6 @@ static const int user_bh            = 6;        /* 2 is the default spacing arou
 static const int vertpad            = 5;       /* vertical padding of bar */
 static const int sidepad            = 15;       /* horizontal padding of bar */
 static char font[]            = "monospace:size=10";
-// static const char *fonts[]          = { "monospace:size=10", "ttf-font-awesome:size=16" };
 static const char *fonts[]          = { "monospace:size=10", "ttf-font-awesome:size=10:antialias:true", "FontAwesome5Brands:size=8:antialias:true", "FontAwesome5Free:size=8:antialias:true", "FontAwesome5Free:style=Solid:size=8:antialias:true"};
 static char dmenufont[]       = "monospace:size=12";
 static char normbgcolor[]       = "#292929";
@@ -59,7 +58,7 @@ static const Rule rules[] = {
 	{ "Data Editor (Browse)",    NULL,     NULL,           0,         0,          0,           -1,        -1,			0},
 	{ "Firefox", NULL,     NULL,           1 << 8,    0,          0,          -1,        -1,			0},
 	{ "st",      NULL,     NULL,           0,         1,          0,           1,        -1,			's'},
-	{ "vim",      NULL,     NULL,           0,         1,          0,           0,        -1,			'v'},
+	{ "nvim",      NULL,     NULL,           0,         1,          0,           0,        -1,			'v'},
 	{ "KeePassXC",      NULL,     NULL,           0,         1,          0,           0,        -1,			'k'},
 	{ "htop",      NULL,     NULL,           0,         1,          0,           0,        -1,			'z'},
 	{ NULL,      NULL,     "Event Tester", 0,        	 0,          0,           1,        -1,			0}, /* xev */
@@ -111,8 +110,8 @@ static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont,
 static const char *rebootcmd[]  = { "sudo", "shutdown", "-r", "+0", NULL };
 static const char *shutdowncmd[]  = { "sudo", "shutdown", "+0", NULL };
 static const char *termcmd[]  = { "st", NULL };
-static const char *brightnessup[] = {"xbacklight", "-inc", "5", NULL} ;
-static const char *brightnessdown[] = {"xbacklight", "-dec", "5", NULL} ;
+static const char *brightnessup[] = {"light", "-A", "5", NULL} ;
+static const char *brightnessdown[] = {"light", "-U", "5", NULL} ;
 
 /*
  * Xresources preferences to load at startup
@@ -208,9 +207,6 @@ static const Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_Delete, spawn,          {.v = rebootcmd} },
 	{ MODKEY|ShiftMask,             XK_Escape, spawn,          {.v = shutdowncmd} },
 	/* commented out pulseaudio vol change functions for pipewire */
-	// { 0,                            XF86XK_AudioMute,		              spawn,	  SHCMD("pamixer -t") }, /* mute */
-	// { 0,                            XF86XK_AudioRaiseVolume,      		spawn,	  SHCMD("pamixer --allow-boost -i 3") }, /* vol up */
-	// { 0,                            XF86XK_AudioLowerVolume,      		spawn,	  SHCMD("pamixer --allow-boost -d 3") }, /* vol down */
 	{ 0,                            XF86XK_AudioMute,		              spawn,	  SHCMD("amixer -q sset Master toggle") }, /* mute */
 	{ 0,                            XF86XK_AudioRaiseVolume,      		spawn,	  SHCMD("amixer -q sset Master 3%+") }, /* vol up */
 	{ 0,                            XF86XK_AudioLowerVolume,      		spawn,	  SHCMD("amixer -q sset Master 3%-") }, /* vol down */
@@ -218,11 +214,12 @@ static const Key keys[] = {
 	{ 0,       						XF86XK_MonBrightnessDown, 			spawn, { .v = brightnessdown } },
 	{ MODKEY,			         					XK_w,		                          spawn,	  SHCMD("$BROWSER") }, /* default web browser */
 	{ MODKEY,			         					XK_c,		                          spawn,	  SHCMD("google-chrome-stable") }, /* chrome */
-	// { MODKEY,			         					XK_r,		                          spawn,	  SHCMD(TERMINAL " -e vifm") }, /* file browser */
+	{ MODKEY|ShiftMask,			        XK_w,		                          spawn,	  SHCMD("librewolf") }, /* librewolf */
 	{ MODKEY|ShiftMask,			        XK_r,		                          spawn,	  SHCMD(TERMINAL " -e ranger") }, /* file browser (ranger)*/
+	{ MODKEY|ShiftMask,			        XK_f,		                          spawn,	  SHCMD(TERMINAL " -e lf") }, /* file browser (lf)*/
 	{ MODKEY,			         					XK_e,		                          spawn,	  SHCMD(TERMINAL " -e emacs -nw --no-splash") }, /* emacs */
-	{ MODKEY,			         					XK_v,		                          spawn,	  SHCMD(TERMINAL " -e vim") }, /* vim */
-	// { MODKEY,			         XK_e,		                             	  spawn,	  SHCMD(TERMINAL " -e emacsclient -c -a 'emacs'") }, /* emacs */
+	{ MODKEY,			         					XK_v,		                          spawn,	  SHCMD(TERMINAL " -e nvim") }, /* neovim */
+	{ MODKEY,			         					XK_g,		                          spawn,	  SHCMD(TERMINAL " -e gemini --include-directories ~/Dropbox/notes/obsidian") }, /* gemini CLI */
 };
 
 /* button definitions */
